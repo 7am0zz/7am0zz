@@ -2,6 +2,8 @@
 
 ## Mohamed Said
 
+[**View my portfolio ↗**](https://7am0zz.github.io/mohamedbreed192-droid/)
+
 **Computer Science student · Building toward a career in software engineering**
 
 I'm studying Computer Science at Canadian University Dubai, with career interests in artificial intelligence and cloud computing. I want to build software that solves useful problems and is clear enough for other people to understand, test, and maintain.
@@ -209,4 +211,4 @@ Software engineering is my career direction; AI and cloud computing are longer-t
 
 ## Contact and Professional Links
 
-[GitHub](https://github.com/7am0zz) · [LinkedIn](https://www.linkedin.com/in/mohamed-said-1492b9225/) · [Email](mailto:mohamedbreed192@gmail.com) · [Live portfolio](https://7am0zz.github.io/mohamedbreed192-droid/) · [3D portfolio source](https://github.com/7am0zz/mohamedbreed192-droid/blob/main/docs/index.html)
+[GitHub](https://github.com/7am0zz) · [LinkedIn](https://www.linkedin.com/in/mohamed-said-1492b9225/) · [Email](mailto:mohamedbreed192@gmail.com) · [Live portfolio](https://7am0zz.github.io/mohamedbreed192-droid/)
