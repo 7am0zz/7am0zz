@@ -40,6 +40,54 @@ def tracked(draw, x, y, label, font, color, spacing):
         x += font.getlength(character) + spacing
 
 
+def draw_network(draw, phase):
+    vertices = [(x, y, z) for x in (-2, 0, 2) for y in (-1, 1) for z in (-1, 1)]
+    angle = math.tau * (phase + .12)
+    cosine, sine = math.cos(angle), math.sin(angle)
+    projected = []
+    for x, y, z in vertices:
+        vertical = y * cosine - z * sine
+        depth = y * sine + z * cosine + .22 * x
+        scale = 1 / (1 - .17 * depth)
+        projected.append((round(936 + 78 * x * scale),
+                          round(65 + (18 * vertical - 3 * x) * scale), depth))
+
+    edges = []
+    for i, a in enumerate(vertices):
+        for j, b in enumerate(vertices[:i]):
+            distance = sum(abs(start - end) for start, end in zip(a, b))
+            if distance == 2:
+                edges.append((i, j))
+    edges.sort(key=lambda edge: sum(projected[index][2] for index in edge))
+    for a, b in edges:
+        x1, y1, z1 = projected[a]
+        x2, y2, z2 = projected[b]
+        brightness = .45 + .20 * (z1 + z2) / 2
+        draw.line((x1, y1, x2, y2), fill=mix(BLUE, brightness), width=2)
+        if (a + b) % 3 == 0:
+            signal(draw, (x1, y1), (x2, y2), (phase * 3 + a * .13 + b * .07) % 1)
+    for x, y, depth in sorted(projected, key=lambda point: point[2]):
+        radius = 2 if depth < 0 else 3
+        node(draw, x, y, mix(ICE, .65 + .2 * depth), radius)
+        if depth > .4:
+            draw.point((x-1, y-1), fill=WHITE)
+
+
+def draw_raised_icon(image, x, y, tile, highlight):
+    draw = ImageDraw.Draw(image)
+    # The front face is sheared in the same direction as the extrusion.
+    draw.ellipse((x+5, 320, x+116, 338), fill=(3, 6, 14))
+    draw.polygon([(x+110, y), (x+118, y+6), (x+105, y+89), (x+97, y+83)],
+                 fill=mix(BLUE, .25 + .12 * highlight))
+    draw.polygon([(x, y+83), (x+97, y+83), (x+105, y+89), (x+8, y+89)],
+                 fill=mix(VIOLET, .28 + .24 * highlight))
+    image.paste(tile, (x, y), tile.getchannel("A"))
+    rim = mix(VIOLET, .29 + .71 * highlight)
+    draw.line([(x, y+83), (x+13, y), (x+110, y), (x+97, y+83), (x, y+83)],
+              fill=rim, width=2)
+    draw.line((x+13, y, x+110, y), fill=mix(ICE, .55 + .45 * highlight), width=2)
+
+
 def hero_frames(font_dir, animations):
     title = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 37)
     subtitle = ImageFont.truetype(str(font_dir / "DejaVuSans.ttf"), 29)
@@ -55,18 +103,6 @@ def hero_frames(font_dir, animations):
         for y, direction in ((15, 1), (344, -1)):
             draw.line((x + sign * 30, y, x, y, x, y + direction * 20), fill=DIM)
 
-    # A directed graph with parallel paths and a shared output.
-    points = ((768, 65), (825, 42), (825, 88), (902, 65), (967, 38),
-              (967, 89), (1031, 65), (1105, 65))
-    links = ((0, 1), (0, 2), (1, 3), (2, 3), (3, 4),
-             (3, 5), (4, 6), (5, 6), (6, 7))
-    edges = [(points[a], points[b]) for a, b in links]
-    for start, end in edges:
-        draw.line((start, end), fill=DIM, width=2)
-    for index, (x, y) in enumerate(points):
-        color = VIOLET if index in (0, len(points)-1) else BLUE
-        draw.ellipse((x-5, y-5, x+5, y+5), fill=NAVY, outline=color, width=2)
-
     draw.rounded_rectangle((75, 36, 390, 89), 7, fill=NAVY, outline=TRACE)
     draw.line((87, 50, 87, 75), fill=VIOLET, width=3)
     draw.text((100, 50), "Mohamed Said", fill=WHITE, font=name, anchor="lt")
@@ -75,21 +111,21 @@ def hero_frames(font_dir, animations):
     draw.text((82, 164), "Building Intelligent Systems & Scalable Software",
               fill=ICE, font=subtitle, anchor="lt")
 
-    tile_size = 104
-    tile_x = [82 + index * 155 for index in range(len(animations))]
+    tile_x = [78 + index * 155 for index in range(len(animations))]
     tiles = [
-        [frame.resize((tile_size, tile_size), Image.Resampling.LANCZOS)
+        [frame.crop((11, 11, 149, 149)).resize((97, 83), Image.Resampling.LANCZOS)
+         .convert("RGBA").transform((111, 83), Image.Transform.AFFINE,
+                                  (1, 13 / 83, -13, 0, 1, 0), Image.Resampling.BICUBIC)
          for frame in icon_frames(illustration)]
         for _, illustration in animations
     ]
-    draw.line((tile_x[0], 284, tile_x[-1] + tile_size, 284), fill=TRACE, width=2)
+    draw.line((tile_x[0], 284, tile_x[-1] + 110, 284), fill=TRACE, width=2)
     frame_count = 30 * len(TOPICS)
     for frame in range(frame_count):
         phase = frame / frame_count
         image = base.copy()
         draw = ImageDraw.Draw(image)
-        for index, (start, end) in enumerate(edges):
-            signal(draw, start, end, (phase * 3 - index * .14) % 1, BLUE)
+        draw_network(draw, phase)
 
         active, step = divmod(frame, 30)
         label = TOPICS[active]
@@ -100,10 +136,9 @@ def hero_frames(font_dir, animations):
                        fill=mix(VIOLET, fade * (.24 + .76 * wave(step/15))))
         for index, (x, frames) in enumerate(zip(tile_x, tiles)):
             tile_frame = (int(phase * 4 * len(frames)) + index * 5) % len(frames)
-            image.paste(frames[tile_frame], (x, 233))
-            if index == active:
-                draw.rounded_rectangle((x+6, 239, x+97, 330), 5,
-                                       outline=mix(VIOLET, .55 + .45 * fade), width=2)
+            highlight = fade if index == active else 0
+            lift = round(5 * highlight + 2 * wave(phase * 2 - index / 7))
+            draw_raised_icon(image, x, 244 - lift, frames[tile_frame], highlight)
         yield image
 
 
@@ -265,7 +300,7 @@ def main():
         ("data-science", analytics),
         ("algorithms", algorithm),
     )
-    save_gif("network-hero", hero_frames(options.font_dir, animations), 60)
+    save_gif("network-hero-3d", hero_frames(options.font_dir, animations), 60)
     for name, illustration in animations:
         save_gif(name, icon_frames(illustration), 70)
 
