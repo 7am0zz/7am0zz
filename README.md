@@ -1,10 +1,64 @@
-<img src="./assets/matrix-banner-space-grotesk-v3.gif" alt="Mohamed Said — Computer Science Student. Software Engineering · AI · Cloud Computing. Animated green binary rain on black." width="1200">
+<img src="assets/animations/matrix-hero.gif" alt="Computer Science | Software Engineering. Building Intelligent Systems &amp; Scalable Software." width="1200">
 
-[**3D portfolio source ↗**](https://github.com/7am0zz/mohamedbreed192-droid/blob/main/docs/index.html) · [Live portfolio](https://7am0zz.github.io/mohamedbreed192-droid/)
+## Mohamed Said
 
 **Computer Science student · Building toward a career in software engineering**
 
 I'm studying Computer Science at Canadian University Dubai, with career interests in artificial intelligence and cloud computing. I want to build software that solves useful problems and is clear enough for other people to understand, test, and maintain.
+
+## Computer Science Expertise
+
+Topics I study or want to explore further.
+
+<table>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="assets/animations/artificial-intelligence.gif" alt="Pulses moving through a neural network" width="96"><br>
+      <strong>Artificial Intelligence</strong>
+    </td>
+    <td align="center" colspan="2">
+      <img src="assets/animations/machine-learning.gif" alt="Model performance curve settling as a model trains" width="96"><br>
+      <strong>Machine Learning</strong>
+    </td>
+    <td align="center" colspan="2">
+      <img src="assets/animations/software-engineering.gif" alt="Terminal with animated code and cursor" width="96"><br>
+      <strong>Software Engineering</strong>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="3">
+      <img src="assets/animations/cybersecurity.gif" alt="Digital shield with a scanning line" width="96"><br>
+      <strong>Cybersecurity</strong>
+    </td>
+    <td align="center" colspan="3">
+      <img src="assets/animations/cloud-computing.gif" alt="Data signals moving between cloud servers" width="96"><br>
+      <strong>Cloud Computing</strong>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="3">
+      <img src="assets/animations/data-science.gif" alt="Animated bar and line chart" width="96"><br>
+      <strong>Data Science</strong>
+    </td>
+    <td align="center" colspan="3">
+      <img src="assets/animations/algorithms.gif" alt="Signal tracing a path through a graph" width="96"><br>
+      <strong>Algorithms</strong>
+    </td>
+  </tr>
+</table>
+
+## Technologies and Tools
+
+My public work in [IncidentLens](https://github.com/7am0zz/incidentlens) uses:
+
+| Area | Technologies used in the project |
+| --- | --- |
+| Programming & web | Python, JavaScript, HTML, CSS |
+| Backend development | FastAPI, Pydantic, SQLAlchemy |
+| Data | PostgreSQL, full-text search, Alembic migrations |
+| Development & verification | Git, Docker Compose, pytest, Ruff, Playwright, GitHub Actions |
+
+My existing academic toolkit also includes **C++, Java, Linux, and Bash scripting**. AI and cloud computing are areas I want to explore further.
 
 ## Featured Projects
 
@@ -184,27 +238,16 @@ Broker confirmation establishes acceptance and routing at publish time; it does 
 
 </details>
 
----
-
-## Technical toolkit
-
-My public work in [IncidentLens](https://github.com/7am0zz/incidentlens) uses:
-
-| Area | Technologies used in the project |
-| --- | --- |
-| Programming & web | Python, JavaScript, HTML, CSS |
-| Backend development | FastAPI, Pydantic, SQLAlchemy |
-| Data | PostgreSQL, full-text search, Alembic migrations |
-| Development & verification | Git, Docker Compose, pytest, Ruff, Playwright, GitHub Actions |
-
-My existing academic toolkit also includes **C++, Java, Linux, and Bash scripting**. AI and cloud computing are areas I want to explore further.
-
 ## Current direction
 
 Through my Computer Science studies, I'm continuing to develop my programming fundamentals, data structures, and algorithms. My goal is to connect those foundations to practical software with clear design decisions, useful documentation, and reproducible checks.
 
 Software engineering is my career direction; AI and cloud computing are longer-term interests.
 
-## Connect
+## GitHub Activity
 
-[GitHub](https://github.com/7am0zz) · [Email](mailto:mohamedbreed192@gmail.com)
+[Contribution activity](https://github.com/7am0zz#js-contribution-activity) · [Public repositories](https://github.com/7am0zz?tab=repositories)
+
+## Contact and Professional Links
+
+[GitHub](https://github.com/7am0zz) · [LinkedIn](https://www.linkedin.com/in/mohamed-said-1492b9225/) · [Email](mailto:mohamedbreed192@gmail.com) · [Live portfolio](https://7am0zz.github.io/mohamedbreed192-droid/) · [3D portfolio source](https://github.com/7am0zz/mohamedbreed192-droid/blob/main/docs/index.html)
