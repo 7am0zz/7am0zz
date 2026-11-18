@@ -34,111 +34,119 @@ def wave(phase):
     return (1 - math.cos(math.tau * phase)) / 2
 
 
-def tracked(draw, x, y, label, font, color, spacing):
-    for character in label:
-        draw.text((x, y), character, font=font, fill=color, anchor="lt")
-        x += font.getlength(character) + spacing
+def draw_orbital_core(draw, phase):
+    angle = math.tau * phase
+    center_x = 920 + 15 * math.cos(angle)
+    center_y = 164 + 10 * math.sin(2 * angle)
+
+    def project(point):
+        x, y, z = point
+        scale = 380 / (380 - z)
+        return round(center_x + x * scale), round(center_y + y * scale)
+
+    def orbit(turn, radius, tilt, twist):
+        x = radius * math.cos(turn)
+        y = radius * math.sin(turn) * math.cos(tilt)
+        z = radius * math.sin(turn) * math.sin(tilt)
+        return (x * math.cos(twist) - y * math.sin(twist),
+                x * math.sin(twist) + y * math.cos(twist), z)
+
+    rear, front = [], []
+    for index, (radius, tilt, twist, color) in enumerate((
+        (98, 1.17, -.52, BLUE), (130, 1.24, .45, VIOLET), (158, .98, -.18, ICE),
+    )):
+        twist += .14 * math.sin(angle + index)
+        vertices = [orbit(math.tau * step / 84, radius, tilt, twist) for step in range(85)]
+        for a, b in zip(vertices, vertices[1:]):
+            layer = front if a[2] + b[2] >= 0 else rear
+            shade = .38 + .35 * max(0, a[2] / radius)
+            layer.append((project(a), project(b), mix(color, shade), 2))
+        for tail in range(17):
+            turn = angle * (index + 1) + 1.7 * index - tail * .034
+            a = orbit(turn, radius, tilt, twist)
+            b = orbit(turn - .037, radius, tilt, twist)
+            layer = front if a[2] + b[2] >= 0 else rear
+            layer.append((project(a), project(b), mix(color, 1 - tail / 20),
+                          4 if tail < 5 else 2))
+        head = orbit(angle * (index + 1) + 1.7 * index, radius, tilt, twist)
+        spot = project(head)
+        (front if head[2] >= 0 else rear).append((spot, spot, WHITE, 5))
+
+    for a, b, color, width in rear:
+        draw.line((a, b), fill=color, width=width)
+        if a == b:
+            node(draw, *a, color, 3)
+
+    # Rotate and project a faceted octahedron with a fixed light source.
+    rotation = angle * 2 + .47
+    vertices = [(x * math.cos(rotation) - z * math.sin(rotation),
+                 y + z * .19,
+                 x * math.sin(rotation) + z * math.cos(rotation))
+                for x, y, z in ((0, -72, 0), (0, 72, 0), (54, 0, 0),
+                                (0, 0, 54), (-54, 0, 0), (0, 0, -54))]
+    faces = [(tip, side, next_side)
+             for tip in (0, 1) for side, next_side in ((2, 3), (3, 4), (4, 5), (5, 2))]
+    faces.sort(key=lambda face: sum(vertices[i][2] for i in face))
+    for tip, a, b in faces:
+        light = (vertices[a][2] + vertices[b][2] - vertices[a][0]) / 160
+        color = BLUE if tip == 0 else VIOLET
+        triangle = [project(vertices[i]) for i in (tip, a, b)]
+        draw.polygon(triangle, fill=mix(color, .32 + .35 * light),
+                     outline=mix(color, .62 + .33 * light), width=2)
+
+    for a, b, color, width in front:
+        draw.line((a, b), fill=color, width=width)
+        if a == b:
+            node(draw, *a, color, 3)
 
 
-def draw_network(draw, phase):
-    vertices = [(x, y, z) for x in (-2, 0, 2) for y in (-1, 1) for z in (-1, 1)]
-    angle = math.tau * (phase + .12)
-    cosine, sine = math.cos(angle), math.sin(angle)
-    projected = []
-    for x, y, z in vertices:
-        vertical = y * cosine - z * sine
-        depth = y * sine + z * cosine + .22 * x
-        scale = 1 / (1 - .17 * depth)
-        projected.append((round(936 + 78 * x * scale),
-                          round(65 + (18 * vertical - 3 * x) * scale), depth))
-
-    edges = []
-    for i, a in enumerate(vertices):
-        for j, b in enumerate(vertices[:i]):
-            distance = sum(abs(start - end) for start, end in zip(a, b))
-            if distance == 2:
-                edges.append((i, j))
-    edges.sort(key=lambda edge: sum(projected[index][2] for index in edge))
-    for a, b in edges:
-        x1, y1, z1 = projected[a]
-        x2, y2, z2 = projected[b]
-        brightness = .45 + .20 * (z1 + z2) / 2
-        draw.line((x1, y1, x2, y2), fill=mix(BLUE, brightness), width=2)
-        if (a + b) % 3 == 0:
-            signal(draw, (x1, y1), (x2, y2), (phase * 3 + a * .13 + b * .07) % 1)
-    for x, y, depth in sorted(projected, key=lambda point: point[2]):
-        radius = 2 if depth < 0 else 3
-        node(draw, x, y, mix(ICE, .65 + .2 * depth), radius)
-        if depth > .4:
-            draw.point((x-1, y-1), fill=WHITE)
-
-
-def draw_raised_icon(image, x, y, tile, highlight):
-    draw = ImageDraw.Draw(image)
-    # The front face is sheared in the same direction as the extrusion.
-    draw.ellipse((x+5, 320, x+116, 338), fill=(3, 6, 14))
-    draw.polygon([(x+110, y), (x+118, y+6), (x+105, y+89), (x+97, y+83)],
-                 fill=mix(BLUE, .25 + .12 * highlight))
-    draw.polygon([(x, y+83), (x+97, y+83), (x+105, y+89), (x+8, y+89)],
-                 fill=mix(VIOLET, .28 + .24 * highlight))
-    image.paste(tile, (x, y), tile.getchannel("A"))
-    rim = mix(VIOLET, .29 + .71 * highlight)
-    draw.line([(x, y+83), (x+13, y), (x+110, y), (x+97, y+83), (x, y+83)],
-              fill=rim, width=2)
-    draw.line((x+13, y, x+110, y), fill=mix(ICE, .55 + .45 * highlight), width=2)
-
-
-def hero_frames(font_dir, animations):
-    title = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 37)
-    subtitle = ImageFont.truetype(str(font_dir / "DejaVuSans.ttf"), 29)
-    topic = ImageFont.truetype(str(font_dir / "DejaVuSansMono.ttf"), 25)
-    name = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 32)
+def hero_frames(font_dir):
+    title = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 47)
+    subtitle = ImageFont.truetype(str(font_dir / "DejaVuSans.ttf"), 25)
+    topic = ImageFont.truetype(str(font_dir / "DejaVuSansMono.ttf"), 20)
+    name = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 29)
     base = Image.new("RGB", (1200, 360), NAVY)
     draw = ImageDraw.Draw(base)
-    for x in range(24, 1200, 24):
-        for y in range(24, 350, 24):
-            draw.point((x, y), fill=(19, 31, 54))
-    draw.rectangle((15, 15, 1184, 344), outline=TRACE)
-    for x, sign in ((15, 1), (1184, -1)):
-        for y, direction in ((15, 1), (344, -1)):
-            draw.line((x + sign * 30, y, x, y, x, y + direction * 20), fill=DIM)
+    for radius in range(243, 1, -3):
+        shade = .16 * (1 - radius / 246) ** 2
+        draw.ellipse((925-radius, 165-radius, 925+radius, 165+radius),
+                     fill=mix(VIOLET, shade))
+    for x in range(662, 1160, 22):
+        for y in range(37, 264, 22):
+            draw.point((x, y), fill=mix(BLUE, .17))
+    draw.rectangle((16, 16, 1183, 343), outline=TRACE)
+    for x, sign in ((16, 1), (1183, -1)):
+        for y, direction in ((16, 1), (343, -1)):
+            draw.line((x + sign * 36, y, x, y, x, y + direction * 23), fill=DIM, width=2)
 
-    draw.rounded_rectangle((75, 36, 390, 89), 7, fill=NAVY, outline=TRACE)
-    draw.line((87, 50, 87, 75), fill=VIOLET, width=3)
-    draw.text((100, 50), "Mohamed Said", fill=WHITE, font=name, anchor="lt")
-    tracked(draw, 82, 112, "COMPUTER SCIENCE | SOFTWARE ENGINEERING",
-            title, WHITE, 1.1)
-    draw.text((82, 164), "Building Intelligent Systems & Scalable Software",
+    for x in range(671, 1180, 58):
+        upper = round(917 + (x-917) * .33)
+        draw.line((upper, 251, x, 330), fill=mix(BLUE, .19))
+    for y in (251, 261, 275, 294, 319):
+        spread = 82 + (y-251) * 2
+        draw.line((917-spread, y, 917+spread, y), fill=mix(BLUE, .16))
+
+    draw.line((66, 48, 66, 75), fill=VIOLET, width=3)
+    draw.text((82, 50), "Mohamed Said", fill=WHITE, font=name, anchor="lt")
+    draw.text((64, 114), "Computer Science", fill=WHITE, font=title, anchor="lt")
+    draw.text((64, 169), "Software Engineering", fill=ICE, font=title, anchor="lt")
+    draw.text((66, 233), "Building Intelligent Systems & Scalable Software",
               fill=ICE, font=subtitle, anchor="lt")
+    draw.line((66, 272, 147, 272), fill=TRACE, width=2)
 
-    tile_x = [78 + index * 155 for index in range(len(animations))]
-    tiles = [
-        [frame.crop((11, 11, 149, 149)).resize((97, 83), Image.Resampling.LANCZOS)
-         .convert("RGBA").transform((111, 83), Image.Transform.AFFINE,
-                                  (1, 13 / 83, -13, 0, 1, 0), Image.Resampling.BICUBIC)
-         for frame in icon_frames(illustration)]
-        for _, illustration in animations
-    ]
-    draw.line((tile_x[0], 284, tile_x[-1] + 110, 284), fill=TRACE, width=2)
     frame_count = 30 * len(TOPICS)
     for frame in range(frame_count):
         phase = frame / frame_count
         image = base.copy()
         draw = ImageDraw.Draw(image)
-        draw_network(draw, phase)
-
-        active, step = divmod(frame, 30)
-        label = TOPICS[active]
-        fade = min(1, (step+2)/5, (30-step+1)/5)
-        draw.text((82, 208), "> " + label, fill=mix(BLUE, fade), font=topic, anchor="lt")
-        cursor = 91 + round(topic.getlength("> " + label))
-        draw.rectangle((cursor, 208, cursor+11, 225),
+        draw_orbital_core(draw, phase)
+        index, step = divmod(frame, 30)
+        label = TOPICS[index]
+        fade = min(1, (step+2)/5, (31-step)/5)
+        draw.text((66, 293), "> " + label, fill=mix(BLUE, fade), font=topic, anchor="lt")
+        cursor = 75 + round(topic.getlength("> " + label))
+        draw.rectangle((cursor, 293, cursor+8, 307),
                        fill=mix(VIOLET, fade * (.24 + .76 * wave(step/15))))
-        for index, (x, frames) in enumerate(zip(tile_x, tiles)):
-            tile_frame = (int(phase * 4 * len(frames)) + index * 5) % len(frames)
-            highlight = fade if index == active else 0
-            lift = round(5 * highlight + 2 * wave(phase * 2 - index / 7))
-            draw_raised_icon(image, x, 244 - lift, frames[tile_frame], highlight)
         yield image
 
 
@@ -300,7 +308,7 @@ def main():
         ("data-science", analytics),
         ("algorithms", algorithm),
     )
-    save_gif("network-hero-3d", hero_frames(options.font_dir, animations), 60)
+    save_gif("orbital-hero", hero_frames(options.font_dir), 60)
     for name, illustration in animations:
         save_gif(name, icon_frames(illustration), 70)
 

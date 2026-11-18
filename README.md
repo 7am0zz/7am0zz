@@ -1,4 +1,4 @@
-<img src="assets/animations/network-hero-3d.gif" alt="Mohamed Said. Computer Science | Software Engineering. Building Intelligent Systems &amp; Scalable Software. Rotating 3D network and animated icons for AI, machine learning, software engineering, cybersecurity, cloud computing, data science, and algorithms." width="1200">
+<img src="assets/animations/orbital-hero.gif" alt="Mohamed Said. Computer Science | Software Engineering. Building Intelligent Systems &amp; Scalable Software. A rotating 3D core with orbiting light trails." width="1200">
 
 ## Mohamed Said
 
