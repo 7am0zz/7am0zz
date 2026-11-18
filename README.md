@@ -13,43 +13,43 @@ Five student projects in software engineering and machine learning. Select a pre
 <table>
   <tr>
     <td width="50%" valign="top">
-      <h3><a href="#aircraft-engine-predictive-maintenance">Aircraft Engine Predictive Maintenance</a></h3>
-      <a href="#aircraft-engine-predictive-maintenance"><img src="assets/projects/aircraft-engine-rul.png" alt="Aircraft Engine Predictive Maintenance — Graduation project · Phase 1 RUL baseline" width="300"></a>
+      <h3><a href="#user-content-project-description-aircraft-engine-predictive-maintenance">Aircraft Engine Predictive Maintenance</a></h3>
+      <a href="#user-content-project-description-aircraft-engine-predictive-maintenance"><img src="assets/projects/aircraft-engine-rul.png" alt="Aircraft Engine Predictive Maintenance — Graduation project · Phase 1 RUL baseline" width="300"></a>
       <p>Graduation project · Phase 1 RUL baseline</p>
       <p><sub>Python · scikit-learn · NASA C-MAPSS</sub></p>
-      <p><a href="#aircraft-engine-predictive-maintenance">Description</a> · <a href="https://github.com/7am0zz/aircraft-engine-predictive-maintenance">Source code ↗</a></p>
+      <p><a href="#user-content-project-description-aircraft-engine-predictive-maintenance">Description</a> · <a href="https://github.com/7am0zz/aircraft-engine-predictive-maintenance">Source code ↗</a></p>
     </td>
     <td width="50%" valign="top">
-      <h3><a href="#sentinel-ai">SENTINEL AI — Autonomous Software Reliability Engineer</a></h3>
-      <a href="#sentinel-ai"><img src="assets/projects/sentinel-ai-overview.png" alt="SENTINEL AI — real scanner results on an intentionally vulnerable synthetic fixture" width="300"></a>
+      <h3><a href="#user-content-project-description-sentinel-ai">SENTINEL AI — Autonomous Software Reliability Engineer</a></h3>
+      <a href="#user-content-project-description-sentinel-ai"><img src="assets/projects/sentinel-ai-overview.png" alt="SENTINEL AI — real scanner results on an intentionally vulnerable synthetic fixture" width="300"></a>
       <p>Inspectable security analysis · Reliability digital twin · Human-reviewed patch proposals</p>
       <p><sub>Next.js · TypeScript · FastAPI · PostgreSQL · Redis · Celery · Semgrep · Bandit</sub></p>
-      <p><a href="#sentinel-ai">Description & screenshots</a> · <a href="https://github.com/7am0zz/sentinel-ai">Source code ↗</a></p>
+      <p><a href="#user-content-project-description-sentinel-ai">Description & screenshots</a> · <a href="https://github.com/7am0zz/sentinel-ai">Source code ↗</a></p>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <h3><a href="#incidentlens">IncidentLens</a></h3>
-      <a href="#incidentlens"><img src="assets/projects/incidentlens-investigation.png" alt="IncidentLens — Evidence-based log investigation" width="300"></a>
+      <h3><a href="#user-content-project-description-incidentlens">IncidentLens</a></h3>
+      <a href="#user-content-project-description-incidentlens"><img src="assets/projects/incidentlens-investigation.png" alt="IncidentLens — Evidence-based log investigation" width="300"></a>
       <p>Evidence-based log investigation</p>
       <p><sub>Python · FastAPI · PostgreSQL</sub></p>
-      <p><a href="#incidentlens">Description</a> · <a href="https://github.com/7am0zz/incidentlens">Source code ↗</a></p>
+      <p><a href="#user-content-project-description-incidentlens">Description</a> · <a href="https://github.com/7am0zz/incidentlens">Source code ↗</a></p>
     </td>
     <td width="50%" valign="top">
-      <h3><a href="#accessledger">AccessLedger</a></h3>
-      <a href="#accessledger"><img src="assets/projects/accessledger-access-review.png" alt="AccessLedger — Explainable employee access reviews" width="300"></a>
+      <h3><a href="#user-content-project-description-accessledger">AccessLedger</a></h3>
+      <a href="#user-content-project-description-accessledger"><img src="assets/projects/accessledger-access-review.png" alt="AccessLedger — Explainable employee access reviews" width="300"></a>
       <p>Explainable employee access reviews</p>
       <p><sub>Python · FastAPI · PostgreSQL</sub></p>
-      <p><a href="#accessledger">Description</a> · <a href="https://github.com/7am0zz/accessledger">Source code ↗</a></p>
+      <p><a href="#user-content-project-description-accessledger">Description</a> · <a href="https://github.com/7am0zz/accessledger">Source code ↗</a></p>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <h3><a href="#queuebridge">QueueBridge</a></h3>
-      <a href="#queuebridge"><img src="assets/projects/queuebridge-order-ledger.png" alt="QueueBridge — Asynchronous orders and recovery" width="300"></a>
+      <h3><a href="#user-content-project-description-queuebridge">QueueBridge</a></h3>
+      <a href="#user-content-project-description-queuebridge"><img src="assets/projects/queuebridge-order-ledger.png" alt="QueueBridge — Asynchronous orders and recovery" width="300"></a>
       <p>Asynchronous orders and recovery</p>
       <p><sub>Java · Spring Boot · RabbitMQ</sub></p>
-      <p><a href="#queuebridge">Description</a> · <a href="https://github.com/7am0zz/queuebridge">Source code ↗</a></p>
+      <p><a href="#user-content-project-description-queuebridge">Description</a> · <a href="https://github.com/7am0zz/queuebridge">Source code ↗</a></p>
     </td>
   </tr>
 </table>
@@ -58,7 +58,7 @@ The application previews use synthetic data; the aircraft engine baseline uses N
 
 ## Project descriptions
 
-<a id="aircraft-engine-predictive-maintenance"></a>
+<a id="project-description-aircraft-engine-predictive-maintenance"></a>
 
 ### [AI-Powered Predictive Maintenance for Aircraft Engines](https://github.com/7am0zz/aircraft-engine-predictive-maintenance)
 
@@ -79,7 +79,7 @@ Predict aircraft engine **Remaining Useful Life (RUL)** from NASA C-MAPSS FD001 
 
 ---
 
-<a id="sentinel-ai"></a>
+<a id="project-description-sentinel-ai"></a>
 
 ### [SENTINEL AI — Autonomous Software Reliability Engineer](https://github.com/7am0zz/sentinel-ai)
 
@@ -114,7 +114,7 @@ These captures come from the running application. A scanner finding is a review 
 
 ---
 
-<a id="incidentlens"></a>
+<a id="project-description-incidentlens"></a>
 
 ### [IncidentLens](https://github.com/7am0zz/incidentlens)
 
@@ -139,7 +139,7 @@ The baseline covers three failure categories with English lexical rules. Negatio
 
 ---
 
-<a id="accessledger"></a>
+<a id="project-description-accessledger"></a>
 
 ### [AccessLedger](https://github.com/7am0zz/accessledger)
 
@@ -157,7 +157,7 @@ Review employee access with **explainable findings and accountable decisions**. 
 
 ---
 
-<a id="queuebridge"></a>
+<a id="project-description-queuebridge"></a>
 
 ### [QueueBridge](https://github.com/7am0zz/queuebridge)
 
