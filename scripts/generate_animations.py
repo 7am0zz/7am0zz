@@ -8,7 +8,7 @@ import argparse
 import math
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 DESTINATION = Path(__file__).resolve().parents[1] / "assets" / "animations"
 BLUE = (105, 192, 255)
@@ -36,8 +36,8 @@ def wave(phase):
 
 def draw_orbital_core(draw, phase):
     angle = math.tau * phase
-    center_x = 920 + 15 * math.cos(angle)
-    center_y = 164 + 10 * math.sin(2 * angle)
+    center_x = 943 + 10 * math.cos(angle)
+    center_y = 150 + 6 * math.sin(2 * angle)
 
     def project(point):
         x, y, z = point
@@ -59,7 +59,7 @@ def draw_orbital_core(draw, phase):
         vertices = [orbit(math.tau * step / 84, radius, tilt, twist) for step in range(85)]
         for a, b in zip(vertices, vertices[1:]):
             layer = front if a[2] + b[2] >= 0 else rear
-            shade = .38 + .35 * max(0, a[2] / radius)
+            shade = .24 + .42 * max(0, a[2] / radius)
             layer.append((project(a), project(b), mix(color, shade), 2))
         for tail in range(17):
             turn = angle * (index + 1) + 1.7 * index - tail * .034
@@ -91,8 +91,16 @@ def draw_orbital_core(draw, phase):
         light = (vertices[a][2] + vertices[b][2] - vertices[a][0]) / 160
         color = BLUE if tip == 0 else VIOLET
         triangle = [project(vertices[i]) for i in (tip, a, b)]
-        draw.polygon(triangle, fill=mix(color, .32 + .35 * light),
-                     outline=mix(color, .62 + .33 * light), width=2)
+        draw.polygon(triangle, fill=mix(color, .34 + .36 * light))
+        apex, left, right = triangle
+        for step in range(11, 0, -1):
+            fraction = step / 12
+            band = [apex] + [
+                tuple(round(start + (end - start) * fraction) for start, end in zip(apex, corner))
+                for corner in (left, right)
+            ]
+            draw.polygon(band, fill=mix(color, .34 + .36 * light + .29 * (1 - fraction)))
+        draw.line([*triangle, apex], fill=mix(color, .72 + .25 * light), width=2)
 
     for a, b, color, width in front:
         draw.line((a, b), fill=color, width=width)
@@ -100,83 +108,60 @@ def draw_orbital_core(draw, phase):
             node(draw, *a, color, 3)
 
 
-def draw_raised_icon(image, x, y, tile, highlight):
-    draw = ImageDraw.Draw(image)
-    # The front face is sheared in the same direction as the extrusion.
-    draw.ellipse((x+5, 425, x+116, 443), fill=(3, 6, 14))
-    draw.polygon([(x+110, y), (x+118, y+6), (x+105, y+89), (x+97, y+83)],
-                 fill=mix(BLUE, .25 + .12 * highlight))
-    draw.polygon([(x, y+83), (x+97, y+83), (x+105, y+89), (x+8, y+89)],
-                 fill=mix(VIOLET, .28 + .24 * highlight))
-    image.paste(tile, (x, y), tile.getchannel("A"))
-    rim = mix(VIOLET, .29 + .71 * highlight)
-    draw.line([(x, y+83), (x+13, y), (x+110, y), (x+97, y+83), (x, y+83)],
-              fill=rim, width=2)
-    draw.line((x+13, y, x+110, y), fill=mix(ICE, .55 + .45 * highlight), width=2)
-
-
 def hero_frames(font_dir, animations):
-    title = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 47)
-    subtitle = ImageFont.truetype(str(font_dir / "DejaVuSans.ttf"), 25)
-    topic = ImageFont.truetype(str(font_dir / "DejaVuSansMono.ttf"), 20)
-    name = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 29)
-    base = Image.new("RGB", (1200, 464), NAVY)
+    title = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 54)
+    subtitle = ImageFont.truetype(str(font_dir / "DejaVuSans.ttf"), 24)
+    topic = ImageFont.truetype(str(font_dir / "DejaVuSansMono.ttf"), 21)
+    name = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 25)
+    base = Image.new("RGB", (1200, 426), NAVY)
     draw = ImageDraw.Draw(base)
-    for radius in range(243, 1, -3):
-        shade = .16 * (1 - radius / 246) ** 2
-        draw.ellipse((925-radius, 165-radius, 925+radius, 165+radius),
+    for radius in range(260, 1, -2):
+        shade = .22 * (1 - radius / 262) ** 2
+        draw.ellipse((944-radius, 150-radius, 944+radius, 150+radius),
                      fill=mix(VIOLET, shade))
-    for x in range(662, 1160, 22):
-        for y in range(37, 264, 22):
-            draw.point((x, y), fill=mix(BLUE, .17))
-    draw.rectangle((16, 16, 1183, 447), outline=TRACE)
-    for x, sign in ((16, 1), (1183, -1)):
-        for y, direction in ((16, 1), (447, -1)):
-            draw.line((x + sign * 36, y, x, y, x, y + direction * 23), fill=DIM, width=2)
+    for x in range(720, 1180, 20):
+        for y in range(28, 301, 20):
+            draw.point((x, y), fill=mix(ICE, .13))
+    draw.rounded_rectangle((14, 14, 1185, 411), 16, outline=TRACE)
+    draw.rounded_rectangle((67, 43, 70, 66), 1, fill=VIOLET)
+    draw.text((84, 45), "Mohamed Said", fill=WHITE, font=name, anchor="lt")
+    draw.text((65, 98), "Computer Science", fill=WHITE, font=title, anchor="lt")
+    draw.text((65, 160), "Software Engineering", fill=ICE, font=title, anchor="lt")
+    draw.text((67, 235), "Building Intelligent Systems & Scalable Software",
+              fill=mix(ICE, .86), font=subtitle, anchor="lt")
 
-    for x in range(671, 1180, 58):
-        upper = round(917 + (x-917) * .33)
-        draw.line((upper, 251, x, 330), fill=mix(BLUE, .19))
-    for y in (251, 261, 275, 294, 319):
-        spread = 82 + (y-251) * 2
-        draw.line((917-spread, y, 917+spread, y), fill=mix(BLUE, .16))
-
-    draw.line((66, 48, 66, 75), fill=VIOLET, width=3)
-    draw.text((82, 50), "Mohamed Said", fill=WHITE, font=name, anchor="lt")
-    draw.text((64, 114), "Computer Science", fill=WHITE, font=title, anchor="lt")
-    draw.text((64, 169), "Software Engineering", fill=ICE, font=title, anchor="lt")
-    draw.text((66, 233), "Building Intelligent Systems & Scalable Software",
-              fill=ICE, font=subtitle, anchor="lt")
-    draw.line((66, 272, 147, 272), fill=TRACE, width=2)
-
-    draw.line((66, 337, 1134, 337), fill=TRACE)
-    tile_x = [78 + index * 155 for index in range(len(animations))]
+    draw.rectangle((53, 320, 1146, 394), fill=NAVY)
+    draw.line((64, 316, 1135, 316), fill=TRACE)
+    icon_x = [64 + index * 155 for index in range(len(animations))]
     tiles = [
-        [frame.crop((11, 11, 149, 149)).resize((97, 83), Image.Resampling.LANCZOS)
-         .convert("RGBA").transform((111, 83), Image.Transform.AFFINE,
-                                  (1, 13 / 83, -13, 0, 1, 0), Image.Resampling.BICUBIC)
-         for frame in icon_frames(illustration)]
+        [image.crop((23, 23, 137, 137)).resize((65, 65), Image.Resampling.LANCZOS)
+         for image in icon_frames(illustration)]
         for _, illustration in animations
     ]
-    draw.line((tile_x[0], 390, tile_x[-1] + 110, 390), fill=TRACE, width=2)
     frame_count = 30 * len(TOPICS)
     for frame in range(frame_count):
         phase = frame / frame_count
         image = base.copy()
         draw = ImageDraw.Draw(image)
         draw_orbital_core(draw, phase)
-        index, step = divmod(frame, 30)
-        label = TOPICS[index]
-        fade = min(1, (step+2)/5, (31-step)/5)
-        draw.text((66, 293), "> " + label, fill=mix(BLUE, fade), font=topic, anchor="lt")
-        cursor = 75 + round(topic.getlength("> " + label))
-        draw.rectangle((cursor, 293, cursor+8, 307),
-                       fill=mix(VIOLET, fade * (.24 + .76 * wave(step/15))))
-        for tile_index, (x, frames) in enumerate(zip(tile_x, tiles)):
-            tile_frame = (int(phase * 4 * len(frames)) + tile_index * 5) % len(frames)
-            highlight = fade if tile_index == index else 0
-            lift = round(5 * highlight + 2 * wave(phase * 2 - tile_index / len(tiles)))
-            draw_raised_icon(image, x, 350 - lift, frames[tile_frame], highlight)
+
+        active, step = divmod(frame, 30)
+        fade = .65 + .35 * min(1, (step+2)/5, (31-step)/5)
+        draw.ellipse((67, 283, 73, 289), fill=mix(VIOLET, fade))
+        draw.text((85, 278), TOPICS[active], fill=mix(ICE, fade), font=topic, anchor="lt")
+
+        for index, (x, frames) in enumerate(zip(icon_x, tiles)):
+            tile_frame = (int(phase * 4 * len(frames)) + index * 5) % len(frames)
+            emphasis = fade if index == active else 0
+            panel_color = mix(BLUE, .07 + .045 * emphasis)
+            draw.rounded_rectangle((x, 329, x+140, 396), 8,
+                                   fill=panel_color,
+                                   outline=mix(VIOLET, .22 + .67 * emphasis))
+            icon = frames[tile_frame]
+            icon = ImageChops.lighter(icon, Image.new("RGB", icon.size, panel_color))
+            image.paste(icon, (x+38, 330))
+            if index == active:
+                draw.line((x+49, 396, x+92, 396), fill=mix(VIOLET, fade), width=2)
         yield image
 
 
@@ -338,7 +323,7 @@ def main():
         ("data-science", analytics),
         ("algorithms", algorithm),
     )
-    save_gif("orbital-hero-panels", hero_frames(options.font_dir, animations), 60)
+    save_gif("mohamed-said-banner", hero_frames(options.font_dir, animations), 60)
     for name, illustration in animations:
         save_gif(name, icon_frames(illustration), 70)
 
