@@ -1,4 +1,4 @@
-<img src="assets/animations/matrix-hero.gif" alt="Computer Science | Software Engineering. Building Intelligent Systems &amp; Scalable Software." width="1200">
+<img src="assets/animations/binary-hero.gif" alt="Mohamed Said. Computer Science | Software Engineering. Building Intelligent Systems &amp; Scalable Software." width="1200">
 
 ## Mohamed Said
 
