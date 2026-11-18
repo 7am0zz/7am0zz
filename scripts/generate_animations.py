@@ -100,12 +100,27 @@ def draw_orbital_core(draw, phase):
             node(draw, *a, color, 3)
 
 
-def hero_frames(font_dir):
+def draw_raised_icon(image, x, y, tile, highlight):
+    draw = ImageDraw.Draw(image)
+    # The front face is sheared in the same direction as the extrusion.
+    draw.ellipse((x+5, 425, x+116, 443), fill=(3, 6, 14))
+    draw.polygon([(x+110, y), (x+118, y+6), (x+105, y+89), (x+97, y+83)],
+                 fill=mix(BLUE, .25 + .12 * highlight))
+    draw.polygon([(x, y+83), (x+97, y+83), (x+105, y+89), (x+8, y+89)],
+                 fill=mix(VIOLET, .28 + .24 * highlight))
+    image.paste(tile, (x, y), tile.getchannel("A"))
+    rim = mix(VIOLET, .29 + .71 * highlight)
+    draw.line([(x, y+83), (x+13, y), (x+110, y), (x+97, y+83), (x, y+83)],
+              fill=rim, width=2)
+    draw.line((x+13, y, x+110, y), fill=mix(ICE, .55 + .45 * highlight), width=2)
+
+
+def hero_frames(font_dir, animations):
     title = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 47)
     subtitle = ImageFont.truetype(str(font_dir / "DejaVuSans.ttf"), 25)
     topic = ImageFont.truetype(str(font_dir / "DejaVuSansMono.ttf"), 20)
     name = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 29)
-    base = Image.new("RGB", (1200, 360), NAVY)
+    base = Image.new("RGB", (1200, 464), NAVY)
     draw = ImageDraw.Draw(base)
     for radius in range(243, 1, -3):
         shade = .16 * (1 - radius / 246) ** 2
@@ -114,9 +129,9 @@ def hero_frames(font_dir):
     for x in range(662, 1160, 22):
         for y in range(37, 264, 22):
             draw.point((x, y), fill=mix(BLUE, .17))
-    draw.rectangle((16, 16, 1183, 343), outline=TRACE)
+    draw.rectangle((16, 16, 1183, 447), outline=TRACE)
     for x, sign in ((16, 1), (1183, -1)):
-        for y, direction in ((16, 1), (343, -1)):
+        for y, direction in ((16, 1), (447, -1)):
             draw.line((x + sign * 36, y, x, y, x, y + direction * 23), fill=DIM, width=2)
 
     for x in range(671, 1180, 58):
@@ -134,6 +149,16 @@ def hero_frames(font_dir):
               fill=ICE, font=subtitle, anchor="lt")
     draw.line((66, 272, 147, 272), fill=TRACE, width=2)
 
+    draw.line((66, 337, 1134, 337), fill=TRACE)
+    tile_x = [78 + index * 155 for index in range(len(animations))]
+    tiles = [
+        [frame.crop((11, 11, 149, 149)).resize((97, 83), Image.Resampling.LANCZOS)
+         .convert("RGBA").transform((111, 83), Image.Transform.AFFINE,
+                                  (1, 13 / 83, -13, 0, 1, 0), Image.Resampling.BICUBIC)
+         for frame in icon_frames(illustration)]
+        for _, illustration in animations
+    ]
+    draw.line((tile_x[0], 390, tile_x[-1] + 110, 390), fill=TRACE, width=2)
     frame_count = 30 * len(TOPICS)
     for frame in range(frame_count):
         phase = frame / frame_count
@@ -147,6 +172,11 @@ def hero_frames(font_dir):
         cursor = 75 + round(topic.getlength("> " + label))
         draw.rectangle((cursor, 293, cursor+8, 307),
                        fill=mix(VIOLET, fade * (.24 + .76 * wave(step/15))))
+        for tile_index, (x, frames) in enumerate(zip(tile_x, tiles)):
+            tile_frame = (int(phase * 4 * len(frames)) + tile_index * 5) % len(frames)
+            highlight = fade if tile_index == index else 0
+            lift = round(5 * highlight + 2 * wave(phase * 2 - tile_index / len(tiles)))
+            draw_raised_icon(image, x, 350 - lift, frames[tile_frame], highlight)
         yield image
 
 
@@ -308,7 +338,7 @@ def main():
         ("data-science", analytics),
         ("algorithms", algorithm),
     )
-    save_gif("orbital-hero", hero_frames(options.font_dir), 60)
+    save_gif("orbital-hero-panels", hero_frames(options.font_dir, animations), 60)
     for name, illustration in animations:
         save_gif(name, icon_frames(illustration), 70)
 
