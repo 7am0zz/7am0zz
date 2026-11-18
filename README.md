@@ -1,51 +1,10 @@
-<img src="assets/animations/binary-hero.gif" alt="Mohamed Said. Computer Science | Software Engineering. Building Intelligent Systems &amp; Scalable Software." width="1200">
+<img src="assets/animations/network-hero.gif" alt="Mohamed Said. Computer Science | Software Engineering. Building Intelligent Systems &amp; Scalable Software. Animated network and icons for AI, machine learning, software engineering, cybersecurity, cloud computing, data science, and algorithms." width="1200">
 
 ## Mohamed Said
 
 **Computer Science student · Building toward a career in software engineering**
 
 I'm studying Computer Science at Canadian University Dubai, with career interests in artificial intelligence and cloud computing. I want to build software that solves useful problems and is clear enough for other people to understand, test, and maintain.
-
-## Computer Science Expertise
-
-Topics I study or want to explore further.
-
-<table>
-  <tr>
-    <td align="center" colspan="2">
-      <img src="assets/animations/artificial-intelligence.gif" alt="Pulses moving through a neural network" width="96"><br>
-      <strong>Artificial Intelligence</strong>
-    </td>
-    <td align="center" colspan="2">
-      <img src="assets/animations/machine-learning.gif" alt="Model performance curve settling as a model trains" width="96"><br>
-      <strong>Machine Learning</strong>
-    </td>
-    <td align="center" colspan="2">
-      <img src="assets/animations/software-engineering.gif" alt="Terminal with animated code and cursor" width="96"><br>
-      <strong>Software Engineering</strong>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" colspan="3">
-      <img src="assets/animations/cybersecurity.gif" alt="Digital shield with a scanning line" width="96"><br>
-      <strong>Cybersecurity</strong>
-    </td>
-    <td align="center" colspan="3">
-      <img src="assets/animations/cloud-computing.gif" alt="Data signals moving between cloud servers" width="96"><br>
-      <strong>Cloud Computing</strong>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" colspan="3">
-      <img src="assets/animations/data-science.gif" alt="Animated bar and line chart" width="96"><br>
-      <strong>Data Science</strong>
-    </td>
-    <td align="center" colspan="3">
-      <img src="assets/animations/algorithms.gif" alt="Signal tracing a path through a graph" width="96"><br>
-      <strong>Algorithms</strong>
-    </td>
-  </tr>
-</table>
 
 ## Technologies and Tools
 

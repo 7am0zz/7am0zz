@@ -6,7 +6,6 @@ Pass --font-dir if the DejaVu fonts are installed in a different location.
 
 import argparse
 import math
-import random
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -21,7 +20,7 @@ WHITE = (242, 247, 255)
 NAVY = (6, 11, 25)
 TOPICS = (
     "Artificial Intelligence", "Machine Learning", "Software Engineering",
-    "Cybersecurity", "Cloud Computing", "Data Science",
+    "Cybersecurity", "Cloud Computing", "Data Science", "Algorithms",
 )
 
 
@@ -41,73 +40,70 @@ def tracked(draw, x, y, label, font, color, spacing):
         x += font.getlength(character) + spacing
 
 
-def hero_frames(font_dir):
-    mono = ImageFont.truetype(str(font_dir / "DejaVuSansMono.ttf"), 15)
+def hero_frames(font_dir, animations):
     title = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 37)
     subtitle = ImageFont.truetype(str(font_dir / "DejaVuSans.ttf"), 29)
     topic = ImageFont.truetype(str(font_dir / "DejaVuSansMono.ttf"), 25)
     name = ImageFont.truetype(str(font_dir / "DejaVuSans-Bold.ttf"), 32)
-    width, height = 1200, 344
-    base = Image.new("RGB", (width, height), NAVY)
+    base = Image.new("RGB", (1200, 360), NAVY)
     draw = ImageDraw.Draw(base)
-    for x in range(24, width, 24):
-        for y in range(24, height, 24):
+    for x in range(24, 1200, 24):
+        for y in range(24, 350, 24):
             draw.point((x, y), fill=(19, 31, 54))
-    draw.rectangle((15, 15, 1184, 328), outline=(24, 42, 71))
+    draw.rectangle((15, 15, 1184, 344), outline=TRACE)
     for x, sign in ((15, 1), (1184, -1)):
-        for y, direction in ((15, 1), (328, -1)):
+        for y, direction in ((15, 1), (344, -1)):
             draw.line((x + sign * 30, y, x, y, x, y + direction * 20), fill=DIM)
-    for path in (
-        [(15, 72), (135, 72), (161, 98), (230, 98)],
-        [(15, 291), (153, 291), (175, 269), (301, 269)],
-        [(1184, 63), (1060, 63), (1040, 83), (944, 83)],
-        [(1184, 278), (1074, 278), (1054, 258), (958, 258)],
-    ):
-        draw.line(path, fill=TRACE)
-        x, y = path[-1]
-        draw.ellipse((x-2, y-2, x+2, y+2), outline=DIM)
-    rng = random.Random(41)
-    streams = [
-        (x, rng.randrange(384), rng.choice((1, 2)), rng.choices("01", k=12))
-        for x in range(35, 1180, 21)
+
+    # A directed graph with parallel paths and a shared output.
+    points = ((768, 65), (825, 42), (825, 88), (902, 65), (967, 38),
+              (967, 89), (1031, 65), (1105, 65))
+    links = ((0, 1), (0, 2), (1, 3), (2, 3), (3, 4),
+             (3, 5), (4, 6), (5, 6), (6, 7))
+    edges = [(points[a], points[b]) for a, b in links]
+    for start, end in edges:
+        draw.line((start, end), fill=DIM, width=2)
+    for index, (x, y) in enumerate(points):
+        color = VIOLET if index in (0, len(points)-1) else BLUE
+        draw.ellipse((x-5, y-5, x+5, y+5), fill=NAVY, outline=color, width=2)
+
+    draw.rounded_rectangle((75, 36, 390, 89), 7, fill=NAVY, outline=TRACE)
+    draw.line((87, 50, 87, 75), fill=VIOLET, width=3)
+    draw.text((100, 50), "Mohamed Said", fill=WHITE, font=name, anchor="lt")
+    tracked(draw, 82, 112, "COMPUTER SCIENCE | SOFTWARE ENGINEERING",
+            title, WHITE, 1.1)
+    draw.text((82, 164), "Building Intelligent Systems & Scalable Software",
+              fill=ICE, font=subtitle, anchor="lt")
+
+    tile_size = 104
+    tile_x = [82 + index * 155 for index in range(len(animations))]
+    tiles = [
+        [frame.resize((tile_size, tile_size), Image.Resampling.LANCZOS)
+         for frame in icon_frames(illustration)]
+        for _, illustration in animations
     ]
-    particles = [(rng.randrange(35, 1165), rng.randrange(28, 316)) for _ in range(30)]
-    for frame in range(180):
-        phase = frame / 180
+    draw.line((tile_x[0], 284, tile_x[-1] + tile_size, 284), fill=TRACE, width=2)
+    frame_count = 30 * len(TOPICS)
+    for frame in range(frame_count):
+        phase = frame / frame_count
         image = base.copy()
         draw = ImageDraw.Draw(image)
-        for x, offset, speed, digits in streams:
-            head = (offset + 384 * speed * phase) % 384
-            side = max(0, (abs(x - 600) - 250) / 330)
-            for index, digit in enumerate(digits):
-                y = int((head - 17 * index) % 384) - 20
-                if 16 <= y <= 310:
-                    edge = side * max(0, min(1, (y-16)/18, (310-y)/18))
-                    intensity = (0.14 + 0.43 * edge) * (1 - index / len(digits))
-                    if 105 < y < 247:
-                        intensity *= 0.15 + 0.85 * side
-                    draw.text((x, y), digit, fill=mix(BLUE, intensity), font=mono)
-        for index, (x, y) in enumerate(particles):
-            shift = round(6 * math.sin(math.tau * (phase + index / len(particles))))
-            draw.point((x + shift, y), fill=mix(VIOLET, .20 + .38 * wave(phase + index / 11)))
-        draw.rounded_rectangle((75, 43, 390, 96), 7, fill=NAVY, outline=TRACE)
-        draw.line((87, 57, 87, 82), fill=VIOLET, width=3)
-        draw.text((100, 57), "Mohamed Said", fill=WHITE, font=name, anchor="lt")
-        draw.line((82, 110, 121, 110), fill=BLUE, width=2)
-        tracked(draw, 82, 132, "COMPUTER SCIENCE | SOFTWARE ENGINEERING",
-                title, WHITE, 1.1)
-        draw.text((82, 190), "Building Intelligent Systems & Scalable Software",
-                  fill=ICE, font=subtitle, anchor="lt")
-        topic_index, step = divmod(frame, 30)
-        label = TOPICS[topic_index]
+        for index, (start, end) in enumerate(edges):
+            signal(draw, start, end, (phase * 3 - index * .14) % 1, BLUE)
+
+        active, step = divmod(frame, 30)
+        label = TOPICS[active]
         fade = min(1, (step+2)/5, (30-step+1)/5)
-        draw.text((82, 251), "> " + label, fill=mix(BLUE, fade), font=topic, anchor="lt")
+        draw.text((82, 208), "> " + label, fill=mix(BLUE, fade), font=topic, anchor="lt")
         cursor = 91 + round(topic.getlength("> " + label))
-        draw.rectangle((cursor, 251, cursor+11, 269),
+        draw.rectangle((cursor, 208, cursor+11, 225),
                        fill=mix(VIOLET, fade * (.24 + .76 * wave(step/15))))
-        for index in range(len(TOPICS)):
-            x = 82 + 22 * index
-            draw.line((x, 301, x+14, 301), fill=BLUE if index == topic_index else TRACE, width=2)
+        for index, (x, frames) in enumerate(zip(tile_x, tiles)):
+            tile_frame = (int(phase * 4 * len(frames)) + index * 5) % len(frames)
+            image.paste(frames[tile_frame], (x, 233))
+            if index == active:
+                draw.rounded_rectangle((x+6, 239, x+97, 330), 5,
+                                       outline=mix(VIOLET, .55 + .45 * fade), width=2)
         yield image
 
 
@@ -260,16 +256,17 @@ def main():
                         default=Path("/usr/share/fonts/truetype/dejavu"))
     options = parser.parse_args()
     DESTINATION.mkdir(parents=True, exist_ok=True)
-    save_gif("binary-hero", hero_frames(options.font_dir), 60)
-    for name, illustration in (
+    animations = (
         ("artificial-intelligence", neural_network),
+        ("machine-learning", training),
         ("software-engineering", terminal),
         ("cybersecurity", shield),
         ("cloud-computing", cloud),
         ("data-science", analytics),
         ("algorithms", algorithm),
-        ("machine-learning", training),
-    ):
+    )
+    save_gif("network-hero", hero_frames(options.font_dir, animations), 60)
+    for name, illustration in animations:
         save_gif(name, icon_frames(illustration), 70)
 
 
